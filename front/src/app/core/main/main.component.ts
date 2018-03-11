@@ -19,10 +19,10 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
-    this._weatherService.currentMessage.subscribe(message => this.searchImages(message))
+    this._weatherService.currentMessage.subscribe(message => this.getWeatherByCity(message))
   }
 
-  searchImages(query: string) {
+  getWeatherByCity(query: string) {
     this.searching = true;
     return this._weatherService.getByCityName(query).subscribe(
       data => this.handleSuccess(data),
@@ -33,7 +33,7 @@ export class MainComponent implements OnInit {
 
   handleSuccess(data) {
     this.resultFound = true;
-    this.weather = data.hits;
+    this.weather = data;
     console.log(data.hits);
   }
 

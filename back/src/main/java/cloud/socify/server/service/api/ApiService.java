@@ -1,4 +1,4 @@
-package cloud.socify.server.service;
+package cloud.socify.server.service.api;
 
 public interface ApiService {
 

@@ -6,15 +6,15 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class SocifyServiceApplication extends SpringBootServletInitializer {
+public class WeatherApplication extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(SocifyServiceApplication.class);
+        return application.sources(WeatherApplication.class);
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(SocifyServiceApplication.class, args);
+        SpringApplication.run(WeatherApplication.class, args);
     }
 
 }

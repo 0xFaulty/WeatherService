@@ -6,9 +6,10 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class WeatherService {
-  private API_KEY: string = environment.OPENWEATHER_API_KEY;
-  private API_URL: string = environment.OPENWEATHER_API_URL;
-  private URL_BY_CITY: string = this.API_URL + '?q=';
+  private API_VERSION_URL: string = environment.API_VERSION_URL;
+  private API_URL: string = environment.API_URL;
+
+  private VERSION: string = 'v1';
 
   private messageSource = new BehaviorSubject<string>('default message');
   currentMessage = this.messageSource.asObservable();
@@ -21,8 +22,8 @@ export class WeatherService {
   }
 
   getByCityName(query = 'London') {
-    console.log(this.URL_BY_CITY + 'London' + '?' + this.API_KEY);
-    return this._http.get(this.URL_BY_CITY + query + '?' + this.API_KEY);
+    console.log(this.API_URL + this.VERSION + '/city/' + 'London');
+    return this._http.get(this.API_URL + this.VERSION + '/city/' + 'London');
   }
 
 }

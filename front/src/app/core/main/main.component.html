@@ -1,9 +1,10 @@
-<mat-input-container class="search" color="green">
-  <input matInput [(ngModel)]="searchQuery" name="searchQuery" placeholder="London">
-</mat-input-container>
-<button (click)="searchImages(searchQuery)" mat-raised-button class="searchButton">Find Images</button>
-
 <mat-card style="text-align: center">
+
+  <mat-input-container class="search" color="green">
+    <input matInput [(ngModel)]="searchQuery" name="searchQuery" placeholder="London">
+  </mat-input-container>
+  <button (click)="getWeatherByCity(searchQuery)" mat-raised-button class="searchButton">Get Weather</button>
+
   <h4 *ngIf="resultFound == false" mat-subheader>No Results</h4>
       <mat-card *ngIf="resultFound == true" >
         <mat-card-header>
@@ -12,12 +13,12 @@
           <!--<div class="avatar" mat-card-avatar-->
                <!--[ngStyle]="{'background-image':'url('+ weather.userImageURL +')', 'background-size':'40px 40px'}"></div>-->
           <!--</a>-->
-          <mat-card-title>{{ weather.name }}</mat-card-title>
-          <mat-card-subtitle>{{ weather.id }}</mat-card-subtitle>
+          <mat-card-title>{{ weather.city }}</mat-card-title>
+          <mat-card-subtitle>{{ weather.temp }}</mat-card-subtitle>
         </mat-card-header>
         <!--<img mat-card-image src="{{weather.webformatURL}}">-->
         <mat-card-content>
-          <p>weather.weather.description</p>
+          <p>{{weather.description}}</p>
         </mat-card-content>
         <!--<mat-card-actions>-->
         <!--<button mat-button>LIKE</button>-->
