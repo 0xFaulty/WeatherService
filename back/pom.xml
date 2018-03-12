@@ -11,20 +11,6 @@
     <name>weather</name>
     <description>Weather Service</description>
 
-    <developers>
-        <developer>
-            <id>0xfaulty</id>
-            <name>Valentin</name>
-            <email>socify@ya.ru</email>
-            <organization>0xFaulty Inc.</organization>
-            <organizationUrl>http://socify.cloud</organizationUrl>
-            <roles>
-                <role>Project Lead</role>
-                <role>Developer</role>
-            </roles>
-        </developer>
-    </developers>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -45,6 +31,8 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <lombok.version>1.16.16</lombok.version>
         <guava.version>19.0</guava.version>
+        <httpcomponents.version>4.5.5</httpcomponents.version>
+        <hibernate.version>4.3.11.Final</hibernate.version>
     </properties>
 
     <dependencies>
@@ -54,11 +42,17 @@
             <version>${guava.version}</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.postgresql</groupId>-->
-            <!--<artifactId>postgresql</artifactId>-->
-            <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpcomponents.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -79,10 +73,16 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-starter-data-jpa</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-entitymanager</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -1,6 +1,6 @@
 package cloud.socify.server.controller;
 
-import cloud.socify.server.ex.ChekingCredentialsFailedException;
+import cloud.socify.server.ex.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -8,17 +8,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.security.auth.login.CredentialException;
+
 @ControllerAdvice
 public class ExceptionHandlerAdvice {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExceptionHandlerAdvice.class);
 
-    @ExceptionHandler(ChekingCredentialsFailedException.class)
-    public ResponseEntity handleException(ChekingCredentialsFailedException e) {
-        LOG.info("Wrong credits for username:" + e.getUsername());
+    @ExceptionHandler(CredentialException.class)
+    public ResponseEntity handleCredentialsException(CredentialException e) {
+        LOG.info("Wrong credits for username: " + e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body("Wrong credits");
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity handleUserException(UserNotFoundException e) {
+        LOG.info("User not found. Username: " + e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("Find user error");
     }
 
 }

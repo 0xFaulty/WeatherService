@@ -3,12 +3,29 @@ package cloud.socify.server.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.List;
+import javax.persistence.*;
+import java.util.Date;
 
 @Data
-@AllArgsConstructor
+@Entity
+@Table(name = "users")
 public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "username")
     private String username;
-    private String token;
-    private List<WeatherResponse> history;
+
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "active")
+    private boolean active;
+
+    @Column(name = "created")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdTimestamp;
+
 }
