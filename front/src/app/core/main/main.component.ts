@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {WeatherService} from '../../shared/weather.service';
+import {Component, OnInit} from '@angular/core';
+import {BackTaskService} from '../../shared/backtask.service';
 
 @Component({
   selector: 'app-main',
@@ -8,37 +8,32 @@ import {WeatherService} from '../../shared/weather.service';
 })
 export class MainComponent implements OnInit {
 
-  message: string = "London";
   searchQuery: string = '';
   searching: boolean = false;
 
-  weather: any;
+  list: any[] = [];
+
   resultFound: boolean = false;
 
-  constructor(private _weatherService: WeatherService) {
+  constructor(private _weatherService: BackTaskService) {
   }
 
   ngOnInit() {
-    this._weatherService.currentMessage.subscribe(message => this.getWeatherByCity(message))
+    this._weatherService.currentMessage.subscribe(message => this.getSomething(message));
   }
 
-  getWeatherByCity(query: string) {
+  getSomething(query: string) {
     this.searching = true;
     return this._weatherService.getByCityName(query).subscribe(
       data => this.handleSuccess(data),
-      error => this.handleError(error),
+      error => console.log(error),
       () => this.searching = false
     );
   }
 
   handleSuccess(data) {
+    this.list.unshift(data);
     this.resultFound = true;
-    this.weather = data;
-    console.log(data.hits);
-  }
-
-  handleError(error) {
-    console.log(error);
   }
 
 }

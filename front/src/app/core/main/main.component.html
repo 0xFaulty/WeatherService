@@ -3,15 +3,17 @@
   <mat-input-container class="search" color="green">
     <input matInput [(ngModel)]="searchQuery" name="searchQuery" placeholder="London">
   </mat-input-container>
-  <button (click)="getWeatherByCity(searchQuery)" mat-raised-button class="searchButton">Get Weather</button>
+  <button (click)="getSomething(searchQuery)" mat-raised-button class="searchButton">Get Weather</button>
 
   <h4 *ngIf="resultFound == false" mat-subheader>No Results</h4>
-      <mat-card *ngIf="resultFound == true" >
+  <div *ngIf="resultFound == true">
+    <div *ngFor="let weather of list">
+      <mat-card>
         <mat-card-header>
 
           <!--<a href="{{ image.pageURL }}" target="_bank">-->
           <!--<div class="avatar" mat-card-avatar-->
-               <!--[ngStyle]="{'background-image':'url('+ weather.userImageURL +')', 'background-size':'40px 40px'}"></div>-->
+          <!--[ngStyle]="{'background-image':'url('+ weather.userImageURL +')', 'background-size':'40px 40px'}"></div>-->
           <!--</a>-->
           <mat-card-title>{{ weather.city }}</mat-card-title>
           <mat-card-subtitle>{{ weather.temp }}</mat-card-subtitle>
@@ -25,4 +27,6 @@
         <!--<button mat-button>SHARE</button>-->
         <!--</mat-card-actions>-->
       </mat-card>
+    </div>
+  </div>
 </mat-card>

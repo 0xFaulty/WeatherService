@@ -31,7 +31,7 @@ public class WeatherServiceImpl implements WeatherService {
     private final static LinkedBlockingQueue<FutureTask<WeatherInfo>> queue = new LinkedBlockingQueue<>();
     private final static ExecutorService executor = Executors.newFixedThreadPool(1);
 
-    private final String API_URL = "http://samples.openweathermap.org/data/2.5/weather?q=";
+    private final String API_URL = "http://api.openweathermap.org/data/2.5/weather?q=";
     private final String API_KEY = "&APPID=c35e703a7be9014e07a7b302bfbd5cee";
 
     private ObjectMapper om = new ObjectMapper();
@@ -43,7 +43,7 @@ public class WeatherServiceImpl implements WeatherService {
     private LoginService loginService;
 
     public WeatherServiceImpl() {
-        schExService.scheduleWithFixedDelay(this::pollQueue, 0, 15, TimeUnit.SECONDS);
+        schExService.scheduleWithFixedDelay(this::pollQueue, 0, 1, TimeUnit.SECONDS);
     }
 
     private void pollQueue() {
@@ -58,9 +58,10 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Override
     public Object addRequestByCity(String city, String token) throws Exception {
+        city = city.replaceAll("_", " ");
 //        long userId = loginService.getUserId(token);
         long userId = 1;
-        String url = API_URL + "London" + API_KEY;
+        String url = API_URL + city + API_KEY;
         Callable<WeatherInfo> infoCallable = () -> mapResponse(om.readTree(getUri(url)), userId);
         FutureTask<WeatherInfo> future = new FutureTask<>(infoCallable);
         queue.offer(future);

@@ -8,7 +8,7 @@ import {SidenavComponent} from './core/sidenav/sidenav.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MaterialModule} from './material.module';
 import {HeaderComponent} from './core/header/header.component';
-import {WeatherService} from './shared/weather.service';
+import {BackTaskService} from './shared/backtask.service';
 import {HttpClientModule} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MainComponent } from './core/main/main.component';
@@ -33,7 +33,7 @@ import {Error404Component} from './core/error404/error-404.component';
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [WeatherService],
+  providers: [BackTaskService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

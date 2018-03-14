@@ -6,8 +6,16 @@ import org.springframework.stereotype.Service;
 public class ApiServiceImpl implements ApiService {
 
     @Override
-    public String getVersion() {
-        return "v1";
+    public Object getVersion() {
+        return new Version();
+    }
+
+    private class Version{
+        private String version = "v1";
+
+        public String getVersion() {
+            return version;
+        }
     }
 
 }
