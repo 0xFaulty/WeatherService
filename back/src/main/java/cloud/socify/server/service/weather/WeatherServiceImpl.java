@@ -5,6 +5,7 @@ import cloud.socify.server.dao.request_by_city.RequestByCityRepository;
 import cloud.socify.server.ex.UserNotFoundException;
 import cloud.socify.server.model.request.WeatherInfo;
 import cloud.socify.server.service.login.LoginService;
+import cloud.socify.server.utils.WeatherUri;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
@@ -84,6 +85,7 @@ public class WeatherServiceImpl implements WeatherService {
         JsonNode coord = node.get("coord");
         wr.setLon(coord.get("lon").asDouble());
         wr.setLat(coord.get("lat").asDouble());
+        wr.setImageUrl(WeatherUri.getDayUri(wr.getDescription()));
         return wr;
     }
 

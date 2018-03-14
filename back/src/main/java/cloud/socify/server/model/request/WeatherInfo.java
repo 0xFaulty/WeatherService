@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.concurrent.ArrayBlockingQueue;
 
 @Data
 @Entity
@@ -30,6 +31,8 @@ public class WeatherInfo {
     private double lon;
     @Column(name = "lat")
     private double lat;
+    @Transient
+    private String imageUrl;
     @Transient
     private String type = "requests_by_city";
 }
