@@ -33,6 +33,7 @@
         <guava.version>19.0</guava.version>
         <httpcomponents.version>4.5.5</httpcomponents.version>
         <hibernate.version>4.3.11.Final</hibernate.version>
+        <spring-security-oauth2.version>2.0.3.RELEASE</spring-security-oauth2.version>
     </properties>
 
     <dependencies>
@@ -88,6 +89,20 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security.oauth</groupId>
+            <artifactId>spring-security-oauth2</artifactId>
+            <version>${spring-security-oauth2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
     </dependencies>
 

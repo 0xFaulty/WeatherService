@@ -1,5 +1,6 @@
 package cloud.socify.server.service.api;
 
+import lombok.Data;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -10,12 +11,9 @@ public class ApiServiceImpl implements ApiService {
         return new Version();
     }
 
-    private class Version{
+    @Data
+    private class Version {
         private String version = "v1";
-
-        public String getVersion() {
-            return version;
-        }
     }
 
 }

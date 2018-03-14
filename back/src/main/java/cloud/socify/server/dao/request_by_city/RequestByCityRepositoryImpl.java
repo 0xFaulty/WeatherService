@@ -1,6 +1,6 @@
 package cloud.socify.server.dao.request_by_city;
 
-import cloud.socify.server.model.request.WeatherInfo;
+import cloud.socify.server.model.info.impl.WeatherInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;

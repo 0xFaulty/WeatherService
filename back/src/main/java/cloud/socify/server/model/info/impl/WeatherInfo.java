@@ -1,15 +1,21 @@
-package cloud.socify.server.model.request;
+package cloud.socify.server.model.info.impl;
 
+import cloud.socify.server.model.info.Info;
 import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.Date;
-import java.util.concurrent.ArrayBlockingQueue;
 
 @Data
 @Entity
 @Table(name = "requests_by_city")
-public class WeatherInfo {
+public class WeatherInfo implements Info {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

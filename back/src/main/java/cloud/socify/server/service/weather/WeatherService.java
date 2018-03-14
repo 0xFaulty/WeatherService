@@ -1,7 +1,9 @@
 package cloud.socify.server.service.weather;
 
+import cloud.socify.server.model.info.InfoResponse;
+
 public interface WeatherService {
 
-    Object addRequestByCity(String city, String token) throws Exception;
+    InfoResponse addRequestByCity(String city, String token) throws Exception;
 
 }
