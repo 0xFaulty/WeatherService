@@ -40,11 +40,11 @@ public class UriUtil {
         return path1.equals(path2);
     }
 
-    public static String encodeUriString(String s, String encoding) throws UnsupportedEncodingException {
+    public static String encode(String s, String encoding) throws UnsupportedEncodingException {
         return URLEncoder.encode(s, encoding);
     }
 
-    public static String decodeUriString(String s, String encoding) throws UnsupportedEncodingException {
+    public static String decode(String s, String encoding) throws UnsupportedEncodingException {
         return URLDecoder.decode(s, encoding);
     }
 

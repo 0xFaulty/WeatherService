@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {BackTaskService} from '../../shared/backtask.service';
+import {ErrorInfo, InfoResponse, QueueInfo, WeatherInfo} from '../../shared/requests';
 
 @Component({
   selector: 'app-main',
@@ -10,6 +11,11 @@ export class MainComponent implements OnInit {
 
   searchQuery: string = '';
   searching: boolean = false;
+
+  errorFlag: boolean = false;
+  errorMessage: string = '';
+
+  queuePos: string = '';
 
   list: any[] = [];
 
@@ -32,8 +38,21 @@ export class MainComponent implements OnInit {
   }
 
   handleSuccess(data) {
-    this.list.unshift(data);
-    this.resultFound = true;
+    let response = <InfoResponse>data;
+    if (response.type === 'ERROR') {
+      let er = <ErrorInfo>response.info;
+      this.errorFlag = true;
+      this.errorMessage = er.message;
+    }
+    if (response.type === 'QUEUE') {
+      let qr = <QueueInfo>response.info;
+      this.queuePos = qr.pos;
+    }
+    if (response.type === 'OK') {
+      let qr = <WeatherInfo>response.info;
+      this.list.unshift(qr);
+      this.resultFound = true;
+    }
   }
 
 }

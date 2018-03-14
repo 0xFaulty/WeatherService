@@ -23,8 +23,7 @@ export class BackTaskService {
     this.messageSource.next(message);
   }
 
-  getByCityName(query) {
-    query = query.replaceAll(' ', '_');
+  getByCityName(query: string) {
     console.log(this.API_URL + this.VERSION + '/city/' + query + '/' + 'token');
     return this._http.get(this.API_URL + this.VERSION + '/city/' + query + '/' + 'token');
     // return interval(100).map(() => this._http.get(this.API_URL + this.VERSION + '/city/' + query));
