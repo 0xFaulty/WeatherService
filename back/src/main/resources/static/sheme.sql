@@ -13,19 +13,19 @@
 DROP TABLE requests_by_city, users;
 
 CREATE TABLE users (
-  id       SERIAL    NOT NULL PRIMARY KEY,
-  username TEXT      NOT NULL,
-  password TEXT      NOT NULL,
-  active   BOOLEAN   NOT NULL DEFAULT TRUE,
-  created  TIMESTAMP NOT NULL DEFAULT NOW()
+  id       SERIAL NOT NULL PRIMARY KEY,
+  username TEXT   NOT NULL,
+  password TEXT   NOT NULL,
+  active   BOOLEAN   DEFAULT TRUE,
+  created  TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE requests_by_city (
-  id          SERIAL    NOT NULL PRIMARY KEY,
-  user_id     INTEGER   NOT NULL REFERENCES users (id),
-  finished    BOOLEAN   NOT NULL DEFAULT FALSE,
-  city        TEXT      NOT NULL,
-  date        TIMESTAMP NOT NULL DEFAULT NOW(),
+  id          SERIAL  NOT NULL PRIMARY KEY,
+  user_id     INTEGER NOT NULL REFERENCES users (id),
+  city        TEXT    NOT NULL,
+  finished    BOOLEAN   DEFAULT FALSE,
+  date        TIMESTAMP DEFAULT NOW(),
   temp        REAL,
   pressure    REAL,
   description TEXT,
@@ -34,8 +34,8 @@ CREATE TABLE requests_by_city (
 );
 
 INSERT INTO users (username, password, active) VALUES
-  ('admin', 'admin', TRUE),
-  ('guest', 'guest', TRUE);
+  ('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', TRUE),
+  ('guest', '84983c60f7daadc1cb8698621f802c0d9f9a3c3c295c810748fb048115c186ec', TRUE);
 
 
 

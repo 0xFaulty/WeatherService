@@ -1,42 +1,93 @@
 package cloud.socify.server.service.login;
 
 import cloud.socify.server.dao.user.UserRepository;
-import cloud.socify.server.ex.WrongTokenException;
+import cloud.socify.server.ex.InvalidLineException;
+import cloud.socify.server.ex.UsernameAlreadyTakenExeption;
 import cloud.socify.server.model.User;
+import cloud.socify.server.service.session.SessionManager;
+import cloud.socify.server.utils.ShaCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.CredentialException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.regex.Pattern;
 
 @Service
 public class LoginServiceImpl implements LoginService {
 
-    private static Map<String, User> tokenMap = new ConcurrentHashMap<>();
+    private final static Pattern validatePattern = Pattern.compile("[^a-zA-Zа-яА-Я0-9]");
 
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private SessionManager sessionManager;
+
     @Override
-    public String getApiToken(String login, String pw) throws CredentialException {
-        User user = repository.getByCredentials(login, pw);
-        if (user != null) {
-            // TODO: 11.03.2018 Token generation
-            String token = user.hashCode() + "";
-            tokenMap.put(token, user);
-            return token;
+    public String login(HttpServletRequest request) throws CredentialException, InvalidLineException {
+        Cookie[] cookie = request.getCookies();
+        String username = getCookieValue(cookie, "username");
+        String password = getCookieValue(cookie, "password");
+
+        if (isNotValid(username) || isNotValid(password)) {
+            throw new InvalidLineException();
         }
-        throw new CredentialException(login);
+
+        User user = repository.getByCredentials(username, ShaCrypt.hash(password));
+        if (user == null) {
+            throw new CredentialException(username);
+        }
+
+        String token = request.getSession().getId();
+        sessionManager.saveSession(username, token);
+
+        return token;
     }
 
     @Override
-    public long getUserId(String token) throws WrongTokenException {
-        User user = tokenMap.get(token);
-        if (user != null) {
-            return user.getId();
+    public String register(HttpServletRequest request) throws InvalidLineException, UsernameAlreadyTakenExeption {
+        Cookie[] cookie = request.getCookies();
+        String username = getCookieValue(cookie, "username");
+        String password = getCookieValue(cookie, "password");
+
+        if (isNotValid(username) || isNotValid(password)) {
+            throw new InvalidLineException();
         }
-        throw new WrongTokenException(token);
+
+        User user = repository.findByUsername(username);
+        if (user != null) {
+            throw new UsernameAlreadyTakenExeption(username);
+        }
+
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setPassword(ShaCrypt.hash(password));
+        newUser.setActive(true);
+        newUser.setCreatedTimestamp(new Date());
+        repository.save(newUser);
+
+        String token = request.getSession().getId();
+        sessionManager.saveSession(username, token);
+
+        return token;
     }
+
+    private boolean isNotValid(String s) {
+        return s == null || validatePattern.matcher(s).find();
+    }
+
+    private String getCookieValue(Cookie[] cookies, String param) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(param)) {
+                return cookie.getValue();
+            }
+        }
+
+        return null;
+    }
+
 
 }

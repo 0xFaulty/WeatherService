@@ -1,11 +1,14 @@
 package cloud.socify.server.service.weather;
 
-import cloud.socify.server.controller.ExceptionHandlerAdvice;
-import cloud.socify.server.dao.request_by_city.RequestByCityRepository;
+import cloud.socify.server.dao.request_by_city.WeatherInfoRepository;
+import cloud.socify.server.dao.user.UserRepository;
+import cloud.socify.server.model.User;
 import cloud.socify.server.model.info.InfoResponse;
 import cloud.socify.server.model.info.impl.ErrorInfo;
+import cloud.socify.server.model.info.impl.HistoryInfo;
 import cloud.socify.server.model.info.impl.WeatherInfo;
-import cloud.socify.server.service.login.LoginService;
+import cloud.socify.server.service.session.SessionManager;
+import cloud.socify.server.utils.CitiesStorage;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
@@ -24,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -37,23 +41,27 @@ import java.util.regex.Pattern;
 @Service
 public class WeatherServiceImpl implements WeatherService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ExceptionHandlerAdvice.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WeatherServiceImpl.class);
     private final static ScheduledExecutorService schExService = Executors.newScheduledThreadPool(1);
     private final static LinkedBlockingQueue<FutureTask<InfoResponse>> queue = new LinkedBlockingQueue<>();
     private final static ExecutorService executor = Executors.newFixedThreadPool(1);
+
+    private static CitiesStorage citiesStorage = new CitiesStorage();
+    private static ObjectMapper om = new ObjectMapper();
 
     private final static URI API_URI = URI.create("http://api.openweathermap.org/data/2.5/weather");
     private final static String API_KEY = "c35e703a7be9014e07a7b302bfbd5cee";
 
     private final static Pattern validatePattern = Pattern.compile("[^a-zA-Zа-яА-Я0-9\\s]");
 
-    private ObjectMapper om = new ObjectMapper();
+    @Autowired
+    private WeatherInfoRepository weatherInfoRepository;
 
     @Autowired
-    private RequestByCityRepository repository;
+    private UserRepository userRepository;
 
     @Autowired
-    private LoginService loginService;
+    private SessionManager sessionManager;
 
     public WeatherServiceImpl() {
         schExService.scheduleWithFixedDelay(this::pollQueue, 0, 1, TimeUnit.SECONDS);
@@ -70,8 +78,18 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    public InfoResponse addRequestByCity(String city, String token) {
+    public InfoResponse getByCity(String city, String token) {
         try {
+            String username = sessionManager.getUsername(token);
+            if (username == null) {
+                return getErrorResponse("Wrong token or session expired");
+            }
+
+            User user = userRepository.findByUsername(username);
+            if (user == null) {
+                return getErrorResponse("User not found");
+            }
+
             if (!isCorrectString(city)) {
                 return getErrorResponse("Unacceptable symbols in city name");
             }
@@ -82,7 +100,7 @@ public class WeatherServiceImpl implements WeatherService {
                     .toUri();
             Callable<InfoResponse> infoCallable = () -> {
                 try {
-                    return mapResponse(om.readTree(getUri(uri)));
+                    return mapResponse(om.readTree(getUri(uri)), user);
                 } catch (Exception e) {
                     LOG.info("Api error", e.getMessage());
                     return getErrorResponse("Server Error");
@@ -99,17 +117,40 @@ public class WeatherServiceImpl implements WeatherService {
         return getErrorResponse("Server Error");
     }
 
+    @Override
+    public InfoResponse getHistory(String token) {
+        String username = sessionManager.getUsername(token);
+        if (username == null) {
+            return getErrorResponse("Wrong token or session expired");
+        }
+
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            return getErrorResponse("User not found");
+        }
+
+        List<WeatherInfo> history = weatherInfoRepository.getUserHistory(user.getId());
+        return new InfoResponse.Builder()
+                .setType("HISTORY")
+                .setInfo(new HistoryInfo(history))
+                .build();
+    }
+
+    @Override
+    public List<String> getAvailableCities() {
+        return citiesStorage.getCities();
+    }
+
     private boolean isCorrectString(String s) {
         return !validatePattern.matcher(s).find();
     }
 
-    private InfoResponse mapResponse(JsonNode node) {
-        long userId = 1; // loginService.getUserId(token);
+    private InfoResponse mapResponse(JsonNode node, User user) {
         int code = node.get("cod").asInt();
         if (HttpStatus.valueOf(code) == HttpStatus.OK) {
             return new InfoResponse.Builder()
                     .setType("OK")
-                    .setInfo(createWeatherInfo(node, userId))
+                    .setInfo(createWeatherInfo(node, user))
                     .build();
         }
         return getErrorResponse(node.get("message").asText());
@@ -122,9 +163,9 @@ public class WeatherServiceImpl implements WeatherService {
                 .build();
     }
 
-    private WeatherInfo createWeatherInfo(JsonNode node, long userId) {
+    private WeatherInfo createWeatherInfo(JsonNode node, User user) {
         WeatherInfo wi = new WeatherInfo();
-        wi.setUserId(userId);
+        wi.setUserId(user.getId());
         wi.setFinished(true);
         wi.setCity(node.get("name").asText());
         wi.setDate(new Date());
@@ -143,12 +184,12 @@ public class WeatherServiceImpl implements WeatherService {
         return wi;
     }
 
-    public static String getImageUri(String name) {
+    private String getImageUri(String name) {
         return "http://openweathermap.org/img/w/" + name + ".png";
     }
 
     private void addToHistory(WeatherInfo wi) {
-        repository.add(wi);
+        weatherInfoRepository.save(wi);
     }
 
     private String getUri(URI uri) throws IOException {

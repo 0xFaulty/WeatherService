@@ -11,50 +11,15 @@ import java.util.List;
 
 @Repository
 public class UserRepositoryImpl implements UserRepositoryCustom {
-    private static final Logger logger = LoggerFactory.getLogger(UserRepositoryImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserRepositoryImpl.class);
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    public void addUser(User object) {
-        entityManager.persist(object);
-        logger.info("Successfully saved. Details: " + object);
-    }
-
-    @Override
-    public void updateUser(User object) {
-        entityManager.merge(object);
-        logger.info("Successfully update. Details: " + object);
-    }
-
-    @Override
-    public void removeUser(long id) {
-        User user = entityManager.find(User.class, id);
-
-        if (user != null) {
-            entityManager.remove(user);
-        }
-        logger.info("Successfully removed. Details: " + user);
-    }
-
-    @Override
-    public User getUserById(long id) {
-        User user = entityManager.find(User.class, id);
-        logger.info("Successfully loaded. Details: " + user);
-
-        return user;
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public List<User> listUsers() {
-        List<User> userList = entityManager.createQuery("from User").getResultList();
-        for (User user : userList) {
-            logger.info("User list: " + user);
-        }
-
-        return userList;
+        return (List<User>) entityManager.createQuery("from User").getResultList();
     }
 
     @Override
@@ -63,7 +28,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
         boolean currentState = user.isActive();
         user.setActive(!currentState);
         entityManager.merge(user);
-        logger.info("User active state successfully changed. Details: " + user);
+        LOG.info("User active state successfully changed. Details: " + user);
     }
 
     @Override

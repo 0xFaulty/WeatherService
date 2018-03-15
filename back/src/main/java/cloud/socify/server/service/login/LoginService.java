@@ -1,13 +1,15 @@
 package cloud.socify.server.service.login;
 
-import cloud.socify.server.ex.WrongTokenException;
+import cloud.socify.server.ex.InvalidLineException;
+import cloud.socify.server.ex.UsernameAlreadyTakenExeption;
 
 import javax.security.auth.login.CredentialException;
+import javax.servlet.http.HttpServletRequest;
 
 public interface LoginService {
 
-    String getApiToken(String login, String pw) throws CredentialException;
+    String login(HttpServletRequest request) throws CredentialException, InvalidLineException;
 
-    long getUserId(String token) throws WrongTokenException;
+    String register(HttpServletRequest request) throws InvalidLineException, UsernameAlreadyTakenExeption;
 
 }

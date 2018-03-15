@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/v1")
 public class WeatherController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WeatherService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WeatherController.class);
 
     @Autowired
     private WeatherService weatherService;
@@ -26,7 +26,27 @@ public class WeatherController {
     @GetMapping(value = "/city/{city}/{token}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getByCity(@PathVariable("city") String city, @PathVariable("token") String token) {
         try {
-            return new ResponseEntity<>(weatherService.addRequestByCity(city, token), HttpStatus.OK);
+            return new ResponseEntity<>(weatherService.getByCity(city, token), HttpStatus.OK);
+        } catch (Exception e) {
+            LOG.error("Errors while process request", e);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error");
+        }
+    }
+
+    @GetMapping(value = "/history/{token}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getHistory(@PathVariable("token") String token) {
+        try {
+            return new ResponseEntity<>(weatherService.getHistory(token), HttpStatus.OK);
+        } catch (Exception e) {
+            LOG.error("Errors while process request", e);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error");
+        }
+    }
+
+    @GetMapping(value = "/cities", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getAvailableCities() {
+        try {
+            return new ResponseEntity<>(weatherService.getAvailableCities(), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error("Errors while process request", e);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error");

@@ -1,6 +1,8 @@
 package cloud.socify.server.controller;
 
+import cloud.socify.server.ex.InvalidLineException;
 import cloud.socify.server.ex.UserNotFoundException;
+import cloud.socify.server.ex.UsernameAlreadyTakenExeption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,22 @@ public class ExceptionHandlerAdvice {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body("Find user error");
+    }
+
+    @ExceptionHandler(InvalidLineException.class)
+    public ResponseEntity handleInvalidLineException(InvalidLineException e) {
+        LOG.info("Invalid characters or empty line. Line: " + e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("Invalid characters or empty line");
+    }
+
+    @ExceptionHandler(UsernameAlreadyTakenExeption.class)
+    public ResponseEntity handleInvalidLineException(UsernameAlreadyTakenExeption e) {
+        LOG.info("Username already taken. Username: " + e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("Username '" + e.getMessage() + "' already taken.");
     }
 
 }
