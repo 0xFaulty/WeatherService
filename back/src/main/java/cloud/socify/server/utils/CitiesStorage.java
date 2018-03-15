@@ -3,14 +3,14 @@ package cloud.socify.server.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class CitiesStorage {
 
     private static final Logger LOG = LoggerFactory.getLogger(CitiesStorage.class);
@@ -20,6 +20,7 @@ public class CitiesStorage {
     private String resourceCityFilePath;
 
     public List<String> getCities() {
+        resourceCityFilePath = "/static/city_list.txt";
         if (cities.isEmpty()) {
             try {
                 System.out.println("Path=" + resourceCityFilePath);
@@ -27,7 +28,7 @@ public class CitiesStorage {
                 cities = fo.readResourceFileToStringList(resourceCityFilePath, "UTF-8")
                         .stream()
                         .skip(1)
-                        .map(str -> str.split(" "))
+                        .map(str -> str.split("\t"))
                         .filter(el -> el.length == 5)
                         .map(el -> el[1] + "," + el[4].toLowerCase())
                         .collect(Collectors.toList());
