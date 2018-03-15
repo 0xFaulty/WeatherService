@@ -1,15 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {WeatherService} from '../../shared/weather.service';
-import {ErrorInfo, InfoResponse, QueueInfo, WeatherInfo} from '../../shared/requests';
+import {ErrorInfo, HistoryInfo, InfoResponse, QueueInfo, WeatherInfo} from '../../shared/requests';
 
 @Component({
-  selector: 'app-main',
-  templateUrl: './main.component.html',
-  styleUrls: ['./main.component.scss']
+  selector: 'app-history',
+  templateUrl: './history.component.html',
+  styleUrls: ['./history.component.scss']
 })
-export class MainComponent implements OnInit {
+export class HistoryComponent implements OnInit {
 
-  searchQuery: string = 'Saint Petersburg';
   searching: boolean = false;
 
   errorFlag: boolean = false;
@@ -25,12 +24,12 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
-    this._weatherService.currentMessage.subscribe(message => this.getSomething(message));
+    this._weatherService.currentMessage.subscribe(() => this.getSomething());
   }
 
-  getSomething(query: string) {
+  getSomething() {
     this.searching = true;
-    return this._weatherService.getByCityName(query).subscribe(
+    return this._weatherService.getByHistory().subscribe(
       data => this.handleSuccess(data),
       error => console.log(error),
       () => this.searching = false
@@ -44,13 +43,9 @@ export class MainComponent implements OnInit {
       this.errorFlag = true;
       this.errorMessage = er.message;
     }
-    if (response.type === 'QUEUE') {
-      let qr = <QueueInfo>response.info;
-      this.queuePos = qr.pos;
-    }
-    if (response.type === 'OK') {
-      let qr = <WeatherInfo>response.info;
-      this.list.unshift(qr);
+    if (response.type === 'HISTORY') {
+      let qr = <HistoryInfo>response.info;
+      this.list = qr.history;
       this.resultFound = true;
     }
   }

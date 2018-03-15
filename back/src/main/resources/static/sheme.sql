@@ -24,6 +24,7 @@ CREATE TABLE requests_by_city (
   id          SERIAL  NOT NULL PRIMARY KEY,
   user_id     INTEGER NOT NULL REFERENCES users (id),
   city        TEXT    NOT NULL,
+  image_url   TEXT    NOT NULL,
   finished    BOOLEAN   DEFAULT FALSE,
   date        TIMESTAMP DEFAULT NOW(),
   temp        REAL,

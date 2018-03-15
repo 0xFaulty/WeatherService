@@ -20,10 +20,18 @@ export class ErrorInfo {
   message: string;
 }
 
+export class HistoryInfo {
+  history: WeatherInfo[];
+}
+
 export interface Info {
 }
 
 export class InfoResponse {
   type: string;
   info: Info;
+}
+
+export interface Handler {
+  handle(done: boolean, message: string): void;
 }
