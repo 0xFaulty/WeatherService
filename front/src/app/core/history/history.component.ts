@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {WeatherService} from '../../shared/weather.service';
 import {ErrorInfo, HistoryInfo, InfoResponse, QueueInfo, WeatherInfo} from '../../shared/requests';
+import {LoginService} from '../../shared/login.service';
 
 @Component({
   selector: 'app-history',
@@ -20,7 +21,7 @@ export class HistoryComponent implements OnInit {
 
   resultFound: boolean = false;
 
-  constructor(private _weatherService: WeatherService) {
+  constructor(private _loginService: LoginService, private _weatherService: WeatherService) {
   }
 
   ngOnInit() {
@@ -48,6 +49,10 @@ export class HistoryComponent implements OnInit {
       this.list = qr.history;
       this.resultFound = true;
     }
+  }
+
+  isLogin(): boolean {
+    return this._loginService.isLogin();
   }
 
 }

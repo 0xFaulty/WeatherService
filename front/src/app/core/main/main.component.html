@@ -1,4 +1,4 @@
-<mat-card style="text-align: center">
+<mat-card style="text-align: center" *ngIf="isLogin() === true">
   <button (click)="getSomething('London')" mat-raised-button class="searchButton">London</button>
   <button (click)="getSomething('Saint Petersburg')" mat-raised-button class="searchButton">Saint Petersburg</button>
   <button (click)="getSomething('Moscow')" mat-raised-button class="searchButton">Moscow</button>

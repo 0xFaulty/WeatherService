@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card *ngIf="isLogin() === true">
   <div *ngIf="resultFound == true">
     <div *ngFor="let weather of list">
       <mat-card>
