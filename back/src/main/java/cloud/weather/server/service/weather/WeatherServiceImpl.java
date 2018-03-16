@@ -46,9 +46,6 @@ public class WeatherServiceImpl implements WeatherService {
     private final static LinkedBlockingQueue<FutureTask<InfoResponse>> queue = new LinkedBlockingQueue<>();
     private final static ExecutorService executor = Executors.newFixedThreadPool(1);
 
-    private static CitiesStorage citiesStorage = new CitiesStorage();
-    private static ObjectMapper om = new ObjectMapper();
-
     private final static URI API_URI = URI.create("http://api.openweathermap.org/data/2.5/weather");
     private final static String API_KEY = "c35e703a7be9014e07a7b302bfbd5cee";
 
@@ -62,6 +59,12 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Autowired
     private SessionManager sessionManager;
+
+    @Autowired
+    private CitiesStorage citiesStorage;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     public WeatherServiceImpl() {
         schExService.scheduleWithFixedDelay(this::pollQueue, 0, 1, TimeUnit.SECONDS);
@@ -103,7 +106,7 @@ public class WeatherServiceImpl implements WeatherService {
                     .toUri();
             Callable<InfoResponse> infoCallable = () -> {
                 try {
-                    return mapResponse(om.readTree(getUri(uri)), user);
+                    return mapResponse(mapper.readTree(getUri(uri)), user);
                 } catch (Exception e) {
                     LOG.info("Api error", e.getMessage());
                     return getErrorResponse("Server Error");

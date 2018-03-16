@@ -20,7 +20,6 @@ public class CitiesStorage {
     private String resourceCityFilePath;
 
     public List<String> getCities() {
-        resourceCityFilePath = "/static/city_list.txt";
         if (cities.isEmpty()) {
             try {
                 FileOperations fo = new FileOperations();
