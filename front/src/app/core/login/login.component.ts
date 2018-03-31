@@ -18,6 +18,8 @@ export class LoginComponent implements OnInit {
   errorMessage = '';
   loading: boolean = false;
 
+  hide = true;
+
   constructor(private _auth: AuthenticationService, private _router: Router) {
   }
 
@@ -33,7 +35,7 @@ export class LoginComponent implements OnInit {
           this._router.navigate(['']);
         },
         error => {
-          alert(error.error);
+          this.errorMessage = error.error;
         }
       );
   }
@@ -47,7 +49,7 @@ export class LoginComponent implements OnInit {
           this._router.navigate(['']);
         },
         error => {
-          alert(error.error);
+          this.errorMessage = error.error;
         }
       );
   }
