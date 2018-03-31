@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import {WeatherService} from '../../shared/weather.service';
-import {FormControl, Validators} from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {AuthenticationService} from '../../shared/authentication.service';
 
 @Component({
   selector: 'app-header',
@@ -9,21 +9,19 @@ import {FormControl, Validators} from '@angular/forms';
 })
 export class HeaderComponent implements OnInit {
 
-  message: string = "girl";
-  searchQuery: string = '';
-
-  constructor(private _imageService: WeatherService) { }
+  constructor(private _router: Router, private _auth: AuthenticationService) {
+  }
 
   ngOnInit() {
-    this._imageService.currentMessage.subscribe(message => this.message = message)
   }
 
-  searchImages(message: string){
-    this._imageService.changeMessage(message);
+  logout() {
+    this._auth.logout();
+    this._router.navigate(['login']);
   }
 
-  hasError(message: string){
-    return this.message === "";
+  isLogin() {
+    return this._auth.isLogin();
   }
 
 }

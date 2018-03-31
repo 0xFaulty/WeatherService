@@ -13,18 +13,18 @@
 DROP TABLE requests_by_city, users;
 
 CREATE TABLE users (
-  id       SERIAL NOT NULL PRIMARY KEY,
-  username TEXT   NOT NULL,
-  password TEXT   NOT NULL,
+  id       BIGSERIAL NOT NULL PRIMARY KEY,
+  username TEXT      NOT NULL,
+  password TEXT      NOT NULL,
   active   BOOLEAN   DEFAULT TRUE,
   created  TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE requests_by_city (
-  id          SERIAL  NOT NULL PRIMARY KEY,
-  user_id     INTEGER NOT NULL REFERENCES users (id),
-  city        TEXT    NOT NULL,
-  image_url   TEXT    NOT NULL,
+  id          BIGSERIAL NOT NULL PRIMARY KEY,
+  user_id     INTEGER   NOT NULL REFERENCES users (id),
+  city        TEXT      NOT NULL,
+  image_url   TEXT      NOT NULL,
   finished    BOOLEAN   DEFAULT FALSE,
   date        TIMESTAMP DEFAULT NOW(),
   temp        REAL,

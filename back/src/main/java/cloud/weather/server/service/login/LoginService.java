@@ -1,6 +1,7 @@
 package cloud.weather.server.service.login;
 
 import cloud.weather.server.ex.InvalidLineException;
+import cloud.weather.server.ex.RequestException;
 import cloud.weather.server.ex.UsernameAlreadyTakenExeption;
 import cloud.weather.server.model.info.InfoResponse;
 
@@ -9,8 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface LoginService {
 
-    InfoResponse login(HttpServletRequest request) throws CredentialException, InvalidLineException;
+    String login(HttpServletRequest request) throws CredentialException, InvalidLineException, RequestException;
 
-    InfoResponse register(HttpServletRequest request) throws InvalidLineException, UsernameAlreadyTakenExeption;
+    String register(HttpServletRequest request) throws InvalidLineException, UsernameAlreadyTakenExeption, RequestException;
 
 }

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {LoginService} from '../../shared/login.service';
+import {AuthenticationService} from '../../shared/authentication.service';
 
 @Component({
   selector: 'app-sidenav',
@@ -8,14 +8,14 @@ import {LoginService} from '../../shared/login.service';
 })
 export class SidenavComponent implements OnInit {
 
-  constructor(private _loginService: LoginService) {
+  constructor(private _auth: AuthenticationService) {
   }
 
   ngOnInit() {
   }
 
   isLogin(): boolean {
-    return this._loginService.isLogin();
+    return this._auth.isLogin();
   }
 
 }

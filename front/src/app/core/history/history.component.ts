@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {WeatherService} from '../../shared/weather.service';
-import {ErrorInfo, HistoryInfo, InfoResponse, QueueInfo, WeatherInfo} from '../../shared/requests';
+import {ErrorInfo, HistoryInfo, InfoResponse, QueueInfo, WeatherInfo} from '../../entity/requests';
 
 @Component({
   selector: 'app-history',

@@ -2,14 +2,16 @@ package cloud.weather.server.service.login;
 
 import cloud.weather.server.dao.user.UserRepository;
 import cloud.weather.server.ex.InvalidLineException;
+import cloud.weather.server.ex.RequestException;
 import cloud.weather.server.ex.UsernameAlreadyTakenExeption;
 import cloud.weather.server.model.User;
-import cloud.weather.server.model.info.InfoResponse;
-import cloud.weather.server.model.info.impl.TokenInfo;
 import cloud.weather.server.service.session.SessionManager;
+import cloud.weather.server.utils.JsonUtils;
 import cloud.weather.server.utils.ShaCrypt;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.security.auth.login.CredentialException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +21,7 @@ import java.util.regex.Pattern;
 @Service
 public class LoginServiceImpl implements LoginService {
 
-    private final static Pattern validatePattern = Pattern.compile("[^a-zA-Zа-яА-Я0-9]");
+    private final static Pattern VALIDATE_PATTERN = Pattern.compile("[^a-zA-Zа-яА-Я0-9]");
 
     @Autowired
     private UserRepository repository;
@@ -28,7 +30,8 @@ public class LoginServiceImpl implements LoginService {
     private SessionManager sessionManager;
 
     @Override
-    public InfoResponse login(HttpServletRequest request) throws CredentialException, InvalidLineException {
+    @Transactional
+    public String login(HttpServletRequest request) throws CredentialException, InvalidLineException, RequestException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
@@ -44,14 +47,16 @@ public class LoginServiceImpl implements LoginService {
         String token = request.getSession().getId();
         sessionManager.saveSession(token, username);
 
-        return new InfoResponse.Builder()
-                .setType("TOKEN")
-                .setInfo(new TokenInfo(token))
-                .build();
+        try {
+            return JsonUtils.getOneParamJson("token", token);
+        } catch (JsonProcessingException e) {
+            throw new RequestException("Server internal error");
+        }
     }
 
     @Override
-    public InfoResponse register(HttpServletRequest request) throws InvalidLineException, UsernameAlreadyTakenExeption {
+    @Transactional
+    public String register(HttpServletRequest request) throws InvalidLineException, UsernameAlreadyTakenExeption, RequestException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
@@ -74,14 +79,15 @@ public class LoginServiceImpl implements LoginService {
         String token = request.getSession().getId();
         sessionManager.saveSession(token, username);
 
-        return new InfoResponse.Builder()
-                .setType("TOKEN")
-                .setInfo(new TokenInfo(token))
-                .build();
+        try {
+            return JsonUtils.getOneParamJson("token", token);
+        } catch (JsonProcessingException e) {
+            throw new RequestException("Server internal error");
+        }
     }
 
     private boolean isNotValid(String s) {
-        return s == null || validatePattern.matcher(s).find();
+        return s == null || VALIDATE_PATTERN.matcher(s).find();
     }
 
 }

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {WeatherService} from '../../shared/weather.service';
-import {ErrorInfo, InfoResponse, QueueInfo, WeatherInfo} from '../../shared/requests';
+import {ErrorInfo, InfoResponse, QueueInfo, WeatherInfo} from '../../entity/requests';
 
 @Component({
   selector: 'app-main',
@@ -25,7 +25,6 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
-    this._weatherService.currentMessage.subscribe(message => this.getSomething(message));
   }
 
   getSomething(query: string) {

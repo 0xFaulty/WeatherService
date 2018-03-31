@@ -21,7 +21,7 @@ public class ExceptionHandlerAdvice {
     public ResponseEntity handleCredentialsException(CredentialException e) {
         LOG.info("Wrong credits for username: " + e.getMessage());
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.FORBIDDEN)
                 .body("Wrong credits");
     }
 
@@ -29,7 +29,7 @@ public class ExceptionHandlerAdvice {
     public ResponseEntity handleUserException(UserNotFoundException e) {
         LOG.info("User not found. Username: " + e.getMessage());
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.FORBIDDEN)
                 .body("Find user error");
     }
 
@@ -37,7 +37,7 @@ public class ExceptionHandlerAdvice {
     public ResponseEntity handleInvalidLineException(InvalidLineException e) {
         LOG.info("Invalid characters or empty line. Line: " + e.getMessage());
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.FORBIDDEN)
                 .body("Invalid characters or empty line");
     }
 
@@ -45,7 +45,7 @@ public class ExceptionHandlerAdvice {
     public ResponseEntity handleInvalidLineException(UsernameAlreadyTakenExeption e) {
         LOG.info("Username already taken. Username: " + e.getMessage());
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.FORBIDDEN)
                 .body("Username '" + e.getMessage() + "' already taken.");
     }
 
