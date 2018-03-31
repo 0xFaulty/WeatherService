@@ -4,7 +4,7 @@ import 'rxjs/add/operator/map';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {VersionService} from './version.service';
-import {LoginService} from './login.service';
+import {AuthenticationService} from './authentication.service';
 
 @Injectable()
 export class WeatherService {
@@ -14,7 +14,7 @@ export class WeatherService {
   private messageSource = new BehaviorSubject<string>('Saint Petersburg');
   currentMessage = this.messageSource.asObservable();
 
-  constructor(private _http: HttpClient, private _version: VersionService, private _loginService: LoginService) {
+  constructor(private _http: HttpClient, private _version: VersionService, private _auth: AuthenticationService) {
   }
 
   changeMessage(message: string) {
@@ -22,7 +22,7 @@ export class WeatherService {
   }
 
   getByCityName(query: string) {
-    let token: string = this._loginService.getToken();
+    let token: string = this._auth.getToken();
     const params = {'token': token};
     let mainUri: string = this.API_URL + this.VERSION + '/city/' + query;
     console.log(mainUri);
@@ -30,7 +30,7 @@ export class WeatherService {
   }
 
   getByHistory() {
-    let token: string = this._loginService.getToken();
+    let token: string = this._auth.getToken();
     const params = {'token': token};
     let mainUri: string = this.API_URL + this.VERSION + '/history';
     console.log(mainUri);

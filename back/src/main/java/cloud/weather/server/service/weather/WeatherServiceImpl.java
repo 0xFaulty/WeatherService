@@ -1,10 +1,10 @@
 package cloud.weather.server.service.weather;
 
-import cloud.weather.server.dao.request_by_city.WeatherInfoRepository;
 import cloud.weather.server.dao.user.UserRepository;
+import cloud.weather.server.dao.weather.WeatherInfoRepository;
+import cloud.weather.server.ex.RequestException;
 import cloud.weather.server.model.User;
 import cloud.weather.server.model.info.InfoResponse;
-import cloud.weather.server.model.info.impl.ErrorInfo;
 import cloud.weather.server.model.info.impl.HistoryInfo;
 import cloud.weather.server.model.info.impl.WeatherInfo;
 import cloud.weather.server.service.session.SessionManager;
@@ -46,9 +46,6 @@ public class WeatherServiceImpl implements WeatherService {
     private final static LinkedBlockingQueue<FutureTask<InfoResponse>> queue = new LinkedBlockingQueue<>();
     private final static ExecutorService executor = Executors.newFixedThreadPool(1);
 
-    private static CitiesStorage citiesStorage = new CitiesStorage();
-    private static ObjectMapper om = new ObjectMapper();
-
     private final static URI API_URI = URI.create("http://api.openweathermap.org/data/2.5/weather");
     private final static String API_KEY = "c35e703a7be9014e07a7b302bfbd5cee";
 
@@ -63,6 +60,12 @@ public class WeatherServiceImpl implements WeatherService {
     @Autowired
     private SessionManager sessionManager;
 
+    @Autowired
+    private CitiesStorage citiesStorage;
+
+    @Autowired
+    private ObjectMapper mapper;
+
     public WeatherServiceImpl() {
         schExService.scheduleWithFixedDelay(this::pollQueue, 0, 1, TimeUnit.SECONDS);
     }
@@ -70,7 +73,10 @@ public class WeatherServiceImpl implements WeatherService {
     private void pollQueue() {
         try {
             if (!queue.isEmpty()) {
-                executor.execute(queue.poll());
+                FutureTask<InfoResponse> task = queue.poll();
+                if (task != null) {
+                    executor.execute(task);
+                }
             }
         } catch (Exception e) {
             LOG.error("Error while execute task", e);
@@ -78,23 +84,23 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    public InfoResponse getByCity(String city, String token) {
+    public InfoResponse getByCity(String city, String token) throws RequestException {
         try {
             if (token == null) {
-                return getErrorResponse("Null token");
+                throw new RequestException("Null token");
             }
             String username = sessionManager.getUsername(token);
             if (username == null) {
-                return getErrorResponse("Wrong token or session expired");
+                throw new RequestException("Wrong token or session expired");
             }
 
             User user = userRepository.findByUsername(username);
             if (user == null) {
-                return getErrorResponse("User not found");
+                throw new RequestException("User not found");
             }
 
             if (!isCorrectString(city)) {
-                return getErrorResponse("Unacceptable symbols in city name");
+                throw new RequestException("Unacceptable symbols in city name");
             }
             URI uri = UriComponentsBuilder.fromUri(API_URI)
                     .queryParam("q", city)
@@ -103,10 +109,10 @@ public class WeatherServiceImpl implements WeatherService {
                     .toUri();
             Callable<InfoResponse> infoCallable = () -> {
                 try {
-                    return mapResponse(om.readTree(getUri(uri)), user);
+                    return mapResponse(mapper.readTree(getUri(uri)), user);
                 } catch (Exception e) {
                     LOG.info("Api error", e.getMessage());
-                    return getErrorResponse("Server Error");
+                    throw new RequestException("Server Error");
                 }
             };
             FutureTask<InfoResponse> future = new FutureTask<>(infoCallable);
@@ -117,22 +123,22 @@ public class WeatherServiceImpl implements WeatherService {
         } catch (ExecutionException e) {
             LOG.error("Error while execution", e);
         }
-        return getErrorResponse("Server Error");
+        throw new RequestException("Server Error");
     }
 
     @Override
-    public InfoResponse getHistory(String token) {
+    public InfoResponse getHistory(String token) throws RequestException {
         String username = sessionManager.getUsername(token);
         if (token == null) {
-            return getErrorResponse("Null token");
+            throw new RequestException("Null token");
         }
         if (username == null) {
-            return getErrorResponse("Wrong token or session expired");
+            throw new RequestException("Wrong token or session expired");
         }
 
         User user = userRepository.findByUsername(username);
         if (user == null) {
-            return getErrorResponse("User not found");
+            throw new RequestException("User not found");
         }
 
         List<WeatherInfo> history = weatherInfoRepository.getUserHistory(user.getId());
@@ -151,7 +157,7 @@ public class WeatherServiceImpl implements WeatherService {
         return !validatePattern.matcher(s).find();
     }
 
-    private InfoResponse mapResponse(JsonNode node, User user) {
+    private InfoResponse mapResponse(JsonNode node, User user) throws RequestException {
         int code = node.get("cod").asInt();
         if (HttpStatus.valueOf(code) == HttpStatus.OK) {
             return new InfoResponse.Builder()
@@ -159,14 +165,7 @@ public class WeatherServiceImpl implements WeatherService {
                     .setInfo(createWeatherInfo(node, user))
                     .build();
         }
-        return getErrorResponse(node.get("message").asText());
-    }
-
-    private InfoResponse getErrorResponse(String message) {
-        return new InfoResponse.Builder()
-                .setType("ERROR")
-                .setInfo(new ErrorInfo(message))
-                .build();
+        throw new RequestException(node.get("message").asText());
     }
 
     private WeatherInfo createWeatherInfo(JsonNode node, User user) {

@@ -4,19 +4,16 @@ import {NgModule} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
 
 import {AppComponent} from './app.component';
-import {SidenavComponent} from './core/sidenav/sidenav.component';
+import {Error404Component, HeaderComponent, HistoryComponent, LoginComponent, MainComponent, SidenavComponent} from './core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MaterialModule} from './material.module';
-import {HeaderComponent} from './core/header/header.component';
 import {WeatherService} from './shared/weather.service';
 import {HttpClientModule} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MainComponent} from './core/main/main.component';
-import {LoginComponent} from './core/login/login.component';
-import {Error404Component} from './core/error404/error-404.component';
-import {LoginService} from './shared/login.service';
+import {AuthenticationService} from './shared/authentication.service';
 import {VersionService} from './shared/version.service';
-import {HistoryComponent} from './core/history/history.component';
+import {AuthGuard} from './shared/auth.guard';
+import {MatDialogModule} from '@angular/material';
 
 @NgModule({
   declarations: [
@@ -35,9 +32,15 @@ import {HistoryComponent} from './core/history/history.component';
     MaterialModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatDialogModule
   ],
-  providers: [WeatherService, LoginService, VersionService],
+  providers: [
+    WeatherService,
+    AuthenticationService,
+    VersionService,
+    AuthGuard
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

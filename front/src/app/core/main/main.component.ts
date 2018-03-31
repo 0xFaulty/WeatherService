@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {WeatherService} from '../../shared/weather.service';
-import {ErrorInfo, InfoResponse, QueueInfo, WeatherInfo} from '../../shared/requests';
-import {LoginService} from '../../shared/login.service';
+import {ErrorInfo, InfoResponse, QueueInfo, WeatherInfo} from '../../entity/requests';
 
 @Component({
   selector: 'app-main',
@@ -22,11 +21,10 @@ export class MainComponent implements OnInit {
 
   resultFound: boolean = false;
 
-  constructor(private _loginService: LoginService, private _weatherService: WeatherService) {
+  constructor(private _weatherService: WeatherService) {
   }
 
   ngOnInit() {
-    this._weatherService.currentMessage.subscribe(message => this.getSomething(message));
   }
 
   getSomething(query: string) {
@@ -54,10 +52,6 @@ export class MainComponent implements OnInit {
       this.list.unshift(qr);
       this.resultFound = true;
     }
-  }
-
-  isLogin(): boolean {
-    return this._loginService.isLogin();
   }
 
 }

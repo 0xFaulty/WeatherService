@@ -1,4 +1,4 @@
-package cloud.weather.server.dao.request_by_city;
+package cloud.weather.server.dao.weather;
 
 import cloud.weather.server.model.info.impl.WeatherInfo;
 

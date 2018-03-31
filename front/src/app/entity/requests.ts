@@ -31,7 +31,3 @@ export class InfoResponse {
   type: string;
   info: Info;
 }
-
-export interface Handler {
-  handle(done: boolean, message: string): void;
-}
